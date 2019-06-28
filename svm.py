@@ -37,7 +37,7 @@ x_test_std = scaler.transform(x_test)
 
 #test_prob = svm.predict_proba(x_test) # predict probability of each class
 
-'''def PCA(x):
+def PCA(x):
     
     cov_x = np.cov(x.T)
     u, s, v = np.linalg.svd(cov_x)
@@ -48,9 +48,9 @@ x_test_std = scaler.transform(x_test)
     return pca_x
 
 x_train_std = PCA(x_train_std)
-x_test_std = PCA(x_test_std)'''
+x_test_std = PCA(x_test_std)
 
-svm = svm.SVC(kernel = 'rbf', probability = True)
+svm = svm.SVC(kernel = 'linear', probability = True)
 svm.fit(x_train_std, y_train)
 
 predict_y = svm.predict(x_test_std)
@@ -69,7 +69,7 @@ def plot_decision_boundary(X, y, clf, test_ind = None, resolution = 0.02):
     x: 2D array, size [batch, features] , features = 2
     '''
     
-    markers = ('s', 'o', 'v') # markers for plot
+    markers = ('s', 'x', 'v') # markers for plot
     colors = ('red', 'green', 'blue', 'gray')
     n_class = len(np.unique(y))
     cmap = ListedColormap(colors[:n_class])
@@ -86,15 +86,14 @@ def plot_decision_boundary(X, y, clf, test_ind = None, resolution = 0.02):
     plt.ylim(x2min, x2max)
     
     # plot data points
-    for idx, c1 in enumerate(np.unique(y)):
+    for idx, c1 in enumerate(np.unique(y)): # for class 1, 2, 3
         plt.scatter(
                 x = X[y == c1, 0], # data points of each class separately
                 y = X[y == c1, 1],
-                cmap = cmap[idx], # use index of class to get from cmap
+                c = cmap(idx), # use index of class to get from cmap
                 alpha = 0.4,
                 edgecolor = 'black',
-                markers = markers[idx],
-                label = c1
+                marker = markers[idx],
                 )
     # highlight test samples
     if test_ind:
@@ -102,15 +101,17 @@ def plot_decision_boundary(X, y, clf, test_ind = None, resolution = 0.02):
                 x = x_test[:, 0],
                 y = x_test[:, 1],
                 c = '',
-                alpha = 1.0,
-                markers = 'o',
+                alpha = 1.0,  #透明度of markder
+                marker = 'o',
                 edgecolor = 'black',
-                label = 'test set'
+                linewidths = 2,
+                s = 55 # size of marker
                 )
        
 plot_decision_boundary(x_train_std, y_train, True)
 plt.xlabel('component 1')
 plt.ylabel('component 2')
+plt.title('Test accuracy: %s'%str(correct_rate))
 
 plt.show()
 
